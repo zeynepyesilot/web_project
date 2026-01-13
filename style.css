@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+html { 
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* harita kutusu */
+#map {
+    z-index: 1; /* navbar'ın altında kalsın diye */
+}
+
+/* tablodaki rozetler için */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+}
+
+/* navbar Logosu */
+.navbar-brand i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+    
+}
+/* ana resim havada süzülsün */
+.floating-img {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+/* nasıl çalışır kartlarına gelince yukarı kaysın */
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    border-color: #ffcccc;
+}
+
+/* tablo satırlarına gelince hafif renk değişsin */
+tbody tr {
+    transition: background-color 0.2s;
+}
+tbody tr:hover {
+    background-color: #fff5f5; 
+}

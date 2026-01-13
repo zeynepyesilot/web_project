@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcilTakip - Akıllı Acil Servis Sistemi</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" type="image/png">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light py-3 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="ri-heart-pulse-fill fs-2 text-danger"></i>
+                <div>
+                    <h5 class="fw-bold m-0 text-dark">AcilTakip</h5>
+                    <small class="text-muted" style="font-size: 0.8rem;" data-lang="nav_subtitle">Yoğunluk Takip Sistemi</small>
+                </div>
+            </a>
+            
+            <div class="d-flex align-items-center order-lg-3 ms-lg-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-danger active" id="btn-tr">TR</button>
+                    <button type="button" class="btn btn-outline-danger" id="btn-en">EN</button>
+                </div>
+                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto text-uppercase fw-bold">
+                    <li class="nav-item"><a class="nav-link active" href="#" data-lang="navbar_home">Anasayfa</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#map-section" data-lang="navbar_map">Harita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#list-section" data-lang="navbar_list">Liste</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="badge bg-danger mb-2" data-lang="hero_badge">Canlı Veri</span>
+                <h1 class="display-4 fw-bold text-dark mb-3">
+                    <span data-lang="hero_title_1">En Yakın ve </span>
+                    <span class="text-success" data-lang="hero_title_highlight">En Müsait</span>
+                    <span data-lang="hero_title_2"> Acil Servisi Bul.</span>
+                </h1>
+                <p class="lead text-muted mb-4" data-lang="hero_desc">
+                    Acil servislerdeki yoğunluğu evden çıkmadan görün. Yapay zeka destekli algoritmamız ile bekleme süresini en aza indirin.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="#map-section" class="btn btn-danger btn-lg rounded-pill px-4">
+                        <i class="ri-map-pin-user-fill me-2"></i><span data-lang="btn_find">Hemen Bul</span>
+                    </a>
+                    <a href="#nasil-calisir" class="btn btn-outline-dark btn-lg rounded-pill px-4">
+                        <span data-lang="btn_how">Nasıl Çalışır?</span>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="hospital.png" alt="Acil Servis" class="img-fluid floating-img">
+            </div>
+        </div>
+    </div>
+
+    <div id="map-section" class="py-5 bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <h2 class="fw-bold" data-lang="map_title">Canlı Harita</h2>
+                    <p class="text-muted" data-lang="map_desc">Konumunuza göre hastaneler ve yoğunluk durumları</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div id="map" style="height: 500px;" class="rounded-4 shadow border border-2 border-white"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="list-section" class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0" data-lang="list_title">Hastane Listesi</h3>
+                <div class="btn-group">
+                    <button id="btn-sort-distance" class="btn btn-outline-secondary btn-sm" data-lang="btn_sort_near">En Yakın</button>
+                    <button id="btn-sort-density" class="btn btn-outline-secondary btn-sm" data-lang="btn_sort_empty">En Tenha</button>
+                </div>
+            </div>
+
+            <div class="table-responsive shadow-sm rounded-3">
+                <table class="table table-hover align-middle mb-0" id="hospitalTable">
+                    <thead class="bg-dark text-white">
+                   <tr>
+                     <th class="py-3 ps-4" data-lang="th_name">Hastane Adı</th>
+                     <th class="py-3" data-lang="th_density">Yoğunluk %</th>
+                     <th class="py-3" data-lang="th_status">Durum</th>
+                     <th class="py-3" data-lang="th_dist">Uzaklık</th> 
+                     <th class="py-3" data-lang="th_wait">Tahmini Bekleme</th> 
+                     <th class="py-3" data-lang="th_dir">Yol Tarifi</th> </tr>
+                    </thead>
+                    <!-- DOM Injection Target: Burası uygulamanın en dinamik noktasıdır. 
+                        main.js içindeki renderHospitals fonksiyonu şunları yapar:
+                         - Bu ID'ye sahip elementi seçer.
+                         - innerHTML = '' ile içindeki "Yükleniyor..." (spinner) kısmını temizler.
+                         - Döngü ile oluşturduğu yeni <tr> (satır) elementlerini appendChild ile buraya ekler. -->
+                    <tbody id="hospital-list-body">
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <div class="spinner-border text-danger" role="status"></div>
+                                <div class="mt-2" data-lang="loading">Veriler Yükleniyor...</div>
+                            </td>
+                        </tr>
+                    </tbody> 
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="nasil-calisir" class="py-5 bg-white">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-5">
+                <span data-lang="how_title">Sistem Nasıl </span>
+                <span class="text-danger" data-lang="how_title_high">Çalışır?</span>
+            </h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm h-100 hover-card">
+                        <i class="ri-database-2-fill fs-1 text-primary mb-3"></i>
+                        <h4 data-lang="step_1_title">1. Veri Toplama</h4>
+                        <p class="text-muted" data-lang="step_1_desc">Hastane yoğunluk verileri simülasyon sunucularımızdan anlık olarak çekilir.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm h-100 hover-card">
+                        <i class="ri-cpu-line fs-1 text-danger mb-3"></i>
+                        <h4 data-lang="step_2_title">2. Analiz & Yapay Zeka</h4>
+                        <p class="text-muted" data-lang="step_2_desc">Algoritmamız trafik, yoğunluk ve mesafeyi hesaplayarak "Erişilebilirlik Puanı" üretir.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 rounded-4 shadow-sm h-100 hover-card">
+                        <i class="ri-map-pin-user-fill fs-1 text-success mb-3"></i>
+                        <h4 data-lang="step_3_title">3. En İyi Yönlendirme</h4>
+                        <p class="text-muted" data-lang="step_3_desc">Size en yakın değil, en hızlı hizmet alabileceğiniz hastane önerilir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p class="m-0">© 2025 AcilTakip Projesi.</p>
+            <small class="text-white-50">Zeynep Yeşilot - 230408014</small>
+        </div>
+    </footer>
+
+    <!-- Modal: class="modal fade" — gizli (display:none) başlar. 
+     Bootstrap JS: main.js içinde `new bootstrap.Modal(...)` ile bir instance oluşturulup 
+     `.show()` çağrıldığında gerekli class'lar değiştirilerek modal görünür hale gelir.
+         `aria-hidden="true"` erişilebilirlik içindir (ekran okuyuculara görünmez olduğunu bildirir).
+         `id="deptList"`: Dynamic List Target — seçilen hastanenin bölümleri JS ile innerHTML/appendChild ile buraya eklenir. -->
+    <div class="modal fade" id="deptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="deptModalLabel">
+                        </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group list-group-flush" id="deptList">
+                        </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-lang="modal_close">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script type="module" src="main.js"></script> <!-- type="module" import export kullanabilmek için -->
+</body>
+</html>
