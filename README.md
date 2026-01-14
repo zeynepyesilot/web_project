@@ -6,7 +6,7 @@
 
 * **📍 Live Map Integration:** Interactive map showing user location and nearby hospitals using **Leaflet.js**.
 * **Smart Sorting Algorithms:** Sort hospitals by **"Nearest"** (Distance) or **"Least Crowded"** (Density Score).
-* **traffic_light: Real-Time Status:** Visual density indicators (🟢 Available, 🟡 Moderate, 🔴 Busy) to help users make quick decisions.
+* **Real-Time Status:** Visual density indicators (🟢 Available, 🟡 Moderate, 🔴 Busy) to help users make quick decisions.
 * **Localization:** Full support for **Turkish (TR)** and **English (EN)** with instant language switching.
 * **Hospital Views:** Dedicated detail pages showing available medical departments (e.g., Cardiology, Neurology) and distance information.
 * **Fully Responsive:** Optimized for mobile and desktop devices using **Bootstrap 5**.
